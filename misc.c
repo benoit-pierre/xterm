@@ -97,6 +97,9 @@
 #include <graphics.h>
 #include <graphics_regis.h>
 #include <graphics_sixel.h>
+#ifdef OPT_WIDE_CHARS
+#include <charclass.h>
+#endif
 
 #include <assert.h>
 
@@ -1326,7 +1329,11 @@ WMFrameWindow(XtermWidget xw)
  * (Tomasz J. Cholewo, t.cholewo@ieee.org)
  */
 
+#ifdef OPT_WIDE_CHARS
+#define IS_WORD_CONSTITUENT(x) (48 == CharacterClass(x))
+#else
 #define IS_WORD_CONSTITUENT(x) ((x) != ' ' && (x) != '\0')
+#endif
 
 static int
 dabbrev_prev_char(TScreen *screen, CELL *cell, LineData **ld)
