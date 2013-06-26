@@ -1,0 +1,13 @@
+*.o
+/Makefile
+/builtin_icons.h
+/config.cache
+/config.log
+/config.status
+/df-install
+/minstall
+/resize
+/xterm
+/xtermcfg.h
+cscope.out*
+tags
