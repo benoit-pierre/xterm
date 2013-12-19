@@ -1472,7 +1472,7 @@ dabbrev_expand(XtermWidget xw)
 
 	if ((copybuffer = TypeMallocN(Char, buf_cnt)) != 0) {
 	    /* delete previous expansion */
-	    memset(copybuffer, screen->dabbrev_erase_char, del_cnt);
+	    memset(copybuffer, (term->keyboard.flags & MODE_DECBKM) ? screen->dabbrev_erase_char : ANSI_DEL, del_cnt);
 	    memmove(copybuffer + del_cnt,
 		    expansion + hint_len,
 		    strlen(expansion) - hint_len);

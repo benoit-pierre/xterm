@@ -2534,16 +2534,6 @@ main(int argc, char *argv[]ENVP_ARG)
 	SysError(ERROR_FIONBIO);
 #endif /* USE_ANY_SYSV_TERMIO, etc */
 
-    /* The erase character is used to delete the current completion */
-#if OPT_DABBREV
-#ifdef TERMIO_STRUCT
-    screen->dabbrev_erase_char = d_tio.c_cc[VERASE];
-#else
-    screen->dabbrev_erase_char = d_sg.sg_erase;
-#endif
-    TRACE(("set dabbrev erase_char %#x\n", screen->dabbrev_erase_char));
-#endif
-
     FD_ZERO(&pty_mask);
     FD_ZERO(&X_mask);
     FD_ZERO(&Select_mask);
@@ -3636,6 +3626,20 @@ spawnXTerm(XtermWidget xw)
 	xw->keyboard.reset_DECBKM = 2;
     }
 #endif /* OPT_INITIAL_ERASE */
+
+    /* The erase character is used to delete the current completion */
+#if OPT_DABBREV
+#if OPT_INITIAL_ERASE
+    screen->dabbrev_erase_char = initial_erase;
+#else
+#ifdef TERMIO_STRUCT
+    screen->dabbrev_erase_char = tio.c_cc[VERASE];
+#else
+    screen->dabbrev_erase_char = sg.sg_erase;
+#endif
+#endif
+    TRACE(("set dabbrev erase_char %#x\n", screen->dabbrev_erase_char));
+#endif
 
 #ifdef TTYSIZE_STRUCT
     /* tell tty how big window is */
