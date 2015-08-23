@@ -1,4 +1,4 @@
-/* $XTermId: misc.c,v 1.726 2015/04/10 08:27:17 tom Exp $ */
+/* $XTermId: misc.c,v 1.728 2015/08/19 00:54:21 tom Exp $ */
 
 /*
  * Copyright 1999-2014,2015 by Thomas E. Dickey
@@ -704,7 +704,7 @@ make_hidden_cursor(XtermWidget xw)
  * until the window is initialized.
  */
 void
-init_colored_cursor(void)
+init_colored_cursor(Display *dpy)
 {
 #ifdef HAVE_LIB_XCURSOR
     static const char theme[] = "index.theme";
@@ -716,6 +716,15 @@ init_colored_cursor(void)
     FILE *fp;
 
     xterm_cursor_theme = 0;
+    /*
+     * The environment variable overrides a (possible) resource Xcursor.theme
+     */
+    if (IsEmpty(env)) {
+	env = XGetDefault(dpy, "Xcursor", "theme");
+    }
+    /*
+     * If neither found, provide our own default theme.
+     */
     if (IsEmpty(env)) {
 	if ((tmp_dir = getenv("TMPDIR")) == 0) {
 	    tmp_dir = P_tmpdir;
@@ -752,6 +761,8 @@ init_colored_cursor(void)
 	    }
 	}
     }
+#else
+    (void) dpy;
 #endif /* HAVE_LIB_XCURSOR */
 }
 
@@ -6021,6 +6032,8 @@ xtermOpenApplication(XtAppContext * app_context_return,
 			     fallback_resources,
 			     NULL, 0);
 #endif /* OPT_SESSION_MGT */
+    init_colored_cursor(XtDisplay(result));
+
     XtSetErrorHandler((XtErrorHandler) 0);
 
     return result;
